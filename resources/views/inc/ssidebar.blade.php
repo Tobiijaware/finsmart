@@ -15,7 +15,7 @@
       </div>
       <div class="info">
           <p class="text-white"><span class="mr-1">{{ Auth::user()->surname.' '. Auth::user()->othername}}</span></p>
-          
+
       </div>
     </div>
 
@@ -28,7 +28,7 @@
           <a href="/dashboard" class="nav-link active">
             <i class="fa fa-home"></i>
             <p>
-              Dashboard 
+              Dashboard
             </p>
           </a>
         </li>
@@ -39,6 +39,8 @@
             <i class="fa fa-user nav-icon"></i>
             <p>My Profile</p>
           </a>
+
+
         </li>
 
         <li class="nav-item has-treeview">
@@ -69,8 +71,8 @@
               </a>
             </li>
           </ul>
-        </li>  
-        
+        </li>
+
         <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
               <i class="fas fa-money-check-alt"></i>
@@ -79,7 +81,7 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-  
+
               <li class="nav-item">
                 <a href="/createsavings" class="nav-link">
                   <i class="fas fa-money-check-alt"></i>
@@ -93,7 +95,7 @@
                 </a>
               </li>
             </ul>
-          </li>   
+          </li>
 
           <li class="nav-item has-treeview">
             <a href="#" class="nav-link">
@@ -103,7 +105,7 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-  
+
               <li class="nav-item">
                 <a href="/createinvestment" class="nav-link">
                   <i class="fas fa-money-check-alt"></i>
@@ -117,8 +119,18 @@
                 </a>
               </li>
             </ul>
-          </li>   
-         
+          </li>
+
+          <li class="nav-item has-treeview menu-open">
+              <a href="#" class="nav-link" data-toggle="modal" data-target="#fundwallet">
+
+                 <i class="fas fa-wallet"></i>
+              <p>
+                   Fund Wallet
+                 </p>
+              </a>
+          </li>
+
           <li class="nav-item has-treeview menu-open">
             <a href="/logout" class="nav-link">
               <i class="fas fa-sign-out-alt"></i>
@@ -129,20 +141,60 @@
           </li>
 
 
-         
-        
-        <li class="nav-item has-treeview">
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            {{-- <x-jet-responsive-nav-link href="{{ route('logout') }}" class="btn btn-block btn-danger" onclick="event.preventDefault(); this.closest('form').submit();">
-               <i class="fa fa-power-off"></i> Logout
-            </x-jet-responsive-nav-link> --}}
-          </form>
-        </li>
+
+
+{{--        <li class="nav-item has-treeview">--}}
+{{--          <form method="POST" action="{{ route('logout') }}">--}}
+{{--            @csrf--}}
+{{--            --}}{{-- <x-jet-responsive-nav-link href="{{ route('logout') }}" class="btn btn-block btn-danger" onclick="event.preventDefault(); this.closest('form').submit();">--}}
+{{--               <i class="fa fa-power-off"></i> Logout--}}
+{{--            </x-jet-responsive-nav-link> --}}
+{{--          </form>--}}
+{{--        </li>--}}
 
       </ul>
     </nav>
     <!-- /.sidebar-menu -->
   </div>
   <!-- /.sidebar -->
+
+
+
 </aside>
+
+<div class="modal fade" id="fundwallet">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title text-uppercase">Fund Your Wallet</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <!-- Modal body -->
+            <div class="modal-body">
+
+
+                <form method="POST" action="/walletfunding">
+
+                    <input class="form-control" type="hidden" name="email" value="{{Auth::user()->email}}"/>
+                    <label for="amount">Amount</label>
+                    <input type="number" name="amount" class="form-control"><br/>
+                    <input type="hidden" name="currency" value="NGN">
+                    @if(!Auth::guest())
+                        <input type="hidden" name="metadata" value="5">
+                    @endif
+                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                    <button type="button" data-dismiss="modal" aria-hidden="true" class="btn btn-default">No, Cancel</button>
+                    <button type="submit" class="btn btn-outline-success" value="{{Auth::user()->userid}}">Pay</button>
+                </form>
+
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+
+            </div>
+
+        </div>
+    </div>
+</div>

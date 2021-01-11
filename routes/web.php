@@ -220,6 +220,8 @@ Route::get('/paymentmethod', 'PaymentController@showcards')->middleware('is_user
 //Route::post('/getreadytopay', 'PaymentController@getAmount');
 
 Route::post('/paynew', 'PayController@paywithpaystack')->name('paynew');
+Route::post('/walletfunding', 'PayController@paywithpaystack');
+Route::post('/repayloan', 'PayController@paywithpaystack');
 Route::get('/payment/callback', 'PayController@handleGatewayCallback');
 Route::post('/getreadytopay', 'PayController@getAmount');
 

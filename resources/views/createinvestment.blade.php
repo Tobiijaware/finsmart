@@ -41,7 +41,7 @@
                     <div class="form-group">
                       <label>Investment Amount</label>
                       <input type="number" min="" max="" name="amount" id="Text1" class="form-control" placeholder="Enter Amount" required >
-                       
+
                     </div>
                     </div>
                   <div class="col-md-4">
@@ -49,12 +49,20 @@
                       <label>Investment Tenure</label>
                       <select name="tenure" class="form-control select2"  required>
                       <option value="">Select Tenure...</option>
-                      <option value="90">90 Days</option>
-                      <option value="180">180 Days</option>
-                      <option value="270">270 Days</option>
-                      <option value="360">360 Days</option>
+                          <option value="30">30 Days</option>
+                          <option value="60">60 Days</option>
+                          <option value="90">90 Days</option>
+                          <option value="120">120 Days</option>
+                          <option value="150">150 Days</option>
+                          <option value="180">180 Days</option>
+                          <option value="210">210 Days</option>
+                          <option value="240">240 Days</option>
+                          <option value="270">270 Days</option>
+                          <option value="300">300 Days</option>
+                          <option value="330">330 Days</option>
+                          <option value="360">360 Days</option>
                       </select>
-                       
+
                     </div>
                   </div>
                 <div class="col-md-9"></div>
@@ -67,7 +75,7 @@
             </form>
         </div>
     </div>
-    </div>  
+    </div>
     </div>
 
     <?php $data = session()->get('data');
@@ -86,17 +94,17 @@
                 <input type="hidden" name="amount" value="{{session()->get('amount')}}">
                 <input type="hidden" name="tenure" value="{{session()->get('tenure')}}">
                 <table class="table">
-                    <tr><th>Investment Tenure</th><td>{{session()->get('tenure')}} Days</td></tr> 
+                    <tr><th>Investment Tenure</th><td>{{session()->get('tenure')}} Days</td></tr>
                     <tr><th>Monthly Interest Rate</th><td><?php echo $data->interest ?>%</td></tr>
                     <tr><th>Yearly Interest Rate</th><td><?php echo $data->interest*12 ?>%</td></tr>
-                    <tr><th>Interest Value</th><td>₦<?php 
-                      $int = session()->get('amount')*$data->interest*session()->get('tenure')/100/30; 
+                    <tr><th>Interest Value</th><td>₦<?php
+                      $int = session()->get('amount')*$data->interest*session()->get('tenure')/100/30;
                        echo number_format($int,2) ?></td></tr>
-                    <tr><th>VAT on Investment Interest</th><td><?php $vat = $int*$data->vat/100;   echo number_format($vat,2) ?> (<?php echo $data->vat ?>%)</td></tr>  
+                    <tr><th>VAT on Investment Interest</th><td><?php $vat = $int*$data->vat/100;   echo number_format($vat,2) ?> (<?php echo $data->vat ?>%)</td></tr>
                      <tr><th>Total Return</th><td><?php $exp = session()->get('amount')+$int-$vat; echo number_format($exp,2) ?></td></tr>
                   </table>
             </div>
-            
+
             </div>
             <div class="col-md-12">
                 <button style="float: right" class="btn btn-outline-primary btn-md" type="submit">
@@ -105,7 +113,7 @@
             </form>
         </div>
     </div>
-    </div> 
+    </div>
     <?php } ?>
 
 @endsection

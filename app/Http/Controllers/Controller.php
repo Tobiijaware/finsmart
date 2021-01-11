@@ -146,11 +146,11 @@ class Controller extends BaseController
 
      public function loanStatus($status)
       {
-          if($status==1 OR $status==0){$r='<font color="red">Awaiting Approval</font>'; }
-          elseif($status==2){$r='<font color="blue"> Approved. Awaiting Processing Fee</font>'; }
-          elseif($status==3){$r='<font color="#036">Awaiting Disbursement</font>'; }
-          elseif($status==4){$r='<font color="green">Loan Disbursed</font>'; }
-          elseif($status==5){$r='<font color="green">Loan Repaid</font>'; }
+          if($status==1 OR $status==0){$r='<p style="color:red;">Awaiting Approval</p>'; }
+          //elseif($status==2){$r='<p color="blue">Approved</p>'; }
+          elseif($status==3){$r='<p style="color:blue;">Awaiting Disbursement</p>'; }
+          elseif($status==4){$r='<p style="color:green;">Loan Disbursed</p>'; }
+          elseif($status==5){$r='<p style="color:darkgreen;">Loan Repaid</p>'; }
           else{$r='Suspended';}
           return $r;
       }
@@ -246,6 +246,19 @@ class Controller extends BaseController
         elseif($total-$paid<$tranch){$res =  100-(100*($total-$paid)/$tranch);}
         else{$res=0;}
         return number_format($res,2);
+    }
+
+
+    public function walletPro2($refs,$bid,$id,$type,$amount,$interest,$profee,$remark){
+        $rep = Auth::user()->userid;
+        $ctime = time();
+        $amount = ($type>10) ? $amount : '-'.$amount;
+        if(empty($id) OR $id=='' OR $id=='0'){}
+        else {
+            $sql = DB::select("INSERT INTO ewallet2 (ref,bid,userid,type,amount,interest,profee,ctime,rep,remark) VALUES
+        ('$refs','$bid','$id','$type','$amount','$interest','$profee','$ctime','$rep','$remark') ");
+        }
+        return;
     }
 
       public function walletProcess($bid,$id,$amt,$status,$type,$ctime,$ref,$remark=''){

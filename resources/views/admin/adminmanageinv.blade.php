@@ -25,16 +25,16 @@ $fin = new Controller;
   <div class="col-lg-12">
     <div class="card">
     <div class="card-header">
-      
+
       <h4>Investment Account Details</h4>
-      <table id="example1"  class="table table-striped">
+      <table id=""  class="table table-striped">
         <thead>
             <tr>
                 <th>Surname</th>
                 <th>Other Names</th>
                 <th>E-mail</th>
                 <th>Phone No</th>
-                <th>Address</th>        
+                <th>Address</th>
               </tr>
         </thead>
         <tbody>
@@ -44,16 +44,16 @@ $fin = new Controller;
           <td>{{$user->email}}</td>
           <td>{{$user->phone}}</td>
           <td>{{$user->address}}</td>
-        </tr>              
+        </tr>
         </tbody>
          @endforeach
       </table>
     </div>
-    
+
   </div>
 
   </div>
- 
+
   {{-- </div> --}}
   {{-- </div> --}}
 </div>
@@ -65,7 +65,7 @@ $fin = new Controller;
         <div class="card-header">
           <h4>INVESTMENT STATISTICS</h4>
         </div>
-       
+
         <table class="table">
             @foreach($invacc as $invacc)
               <tr>
@@ -79,35 +79,35 @@ $fin = new Controller;
               <tr>
               <th>Investment Amount</th>
               <td>₦{{number_format($invacc->amount,2)}}</td>
-              </tr> 
+              </tr>
               <tr>
               <th>Investment Tenure</th>
               <td>{{$invacc->tenure}} Days</td>
               </tr>
-               <?php if($invacc->status ==3){ ?> 
+               <?php if($invacc->status ==3){ ?>
               <tr>
               <th>Investment Age</th>
               <td><?php $time=$invacc->start; echo floor(abs(time()-$time)/(60*60*24)) ?> Days</td>
               </tr>
-              <?php } ?> 
+              <?php } ?>
               <tr>
               <th>Monthly Interest Rate</th>
               <td>{{$invacc->rate}}% (<?php echo $invacc->rate*12 ?>% Yearly)</td>
-              </tr> 
+              </tr>
               <tr>
               <th> Interest Value</th>
-              <td>₦<?php $interest = $invacc->amount* $invacc->rate* $invacc->tenure/100/30; 
+              <td>₦<?php $interest = $invacc->amount* $invacc->rate* $invacc->tenure/100/30;
                echo number_format($interest,2) ?></td>
               </tr>
               <tr>
               <th>VAT on Investment Interest</th>
               <td>₦<?php $vat = $interest*$setname/100; echo number_format($vat,2); ?>
                (<?php echo $setname; ?>%)</td>
-               </tr> 
+               </tr>
                <tr>
-               <th>Total Return</th><td>₦<?php $exp = $invacc->amount+$interest-$vat; 
+               <th>Total Return</th><td>₦<?php $exp = $invacc->amount+$interest-$vat;
                 echo number_format($exp,2) ?></td>
-                </tr>              
+                </tr>
                 <tr>
                 <th>Application Date</th>
                 <td><?php echo date('jS M, Y',strtotime($invacc->created_at)) ?> </td>
@@ -116,7 +116,7 @@ $fin = new Controller;
                 <tr>
                 <th>Activation Date</th>
                 <td><?php  echo date('jS M, Y', $invacc->start) ?> </td>
-                </tr>               
+                </tr>
                 <tr>
                 <th>Expiry Date</th>
                 <td><?php echo date('jS M, Y',$invacc->stop) ?></td>
@@ -143,13 +143,13 @@ $fin = new Controller;
               </tr>
               <tr>
                 <th>Total Value</th>
-                <td><?php $int = $status==3 ? $total : $walletloan2; 
+                <td><?php $int = $status==3 ? $total : $walletloan2;
                echo number_format($paid+$int-abs($liq),2); ?> </td>
                </tr>
               <?php } ?>
               @endforeach
            </table>
-               
+
     <div class="div">
         <?php if($invacc->status <3 AND $admin1 ==1){ ?>
             <button style="" class="btn btn-outline-warning" data-toggle="modal" data-target="#modal-edit"> EDIT INVESTMENT INFORMATION</button>
@@ -158,18 +158,18 @@ $fin = new Controller;
                     <button style="" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-delete" > DELETE INVESTMENT ACCOUNT</button> <?php } ?>
                     <?php if($invacc->status ==1 AND $admin2 ==1){ ?>
                     <button style="float: right" class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-approve"> APPROVE INVESTMENT </button>
-                    <?php } ?> 
+                    <?php } ?>
             <?php if($invacc->status ==3 AND $admin4 ==1){ ?>
-            <button style="float: right; margin:0 10px" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-terminate"> LIQUIDATE INVESTMENT</button> 
+            <button style="float: right; margin:0 10px" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-terminate"> LIQUIDATE INVESTMENT</button>
             <?php } ?>
             <?php if($invacc->status ==2 AND $admin3 ==1){ ?>
-            <button style="float: right" class="btn btn-outline-success" data-toggle="modal" data-target="#modal-payment"> RECEIVE PAYMENT </button>  
+            <button style="float: right" class="btn btn-outline-success" data-toggle="modal" data-target="#modal-payment"> RECEIVE PAYMENT </button>
             <?php } ?>
     </div>
               </div>
               <div class="col-md-6  table-responsive">
                 <div class="card-header">
-                  <h4>TRANSACTION HISTORY</h4>  
+                  <h4>TRANSACTION HISTORY</h4>
                 </div>
                 <table class="table">
                     <tr>
@@ -180,37 +180,37 @@ $fin = new Controller;
                         <th>RECEIVED BY</th>
                         <th>ACTION</th>
                       </tr>
-                      <?php   
-                   $e=0; 
-                   foreach($ccount as $count){                  
+                      <?php
+                   $e=0;
+                   foreach($ccount as $count){
                    $e++
-                ?>       
+                    ?>
                      <tr>
                         <td><?php echo $e; ?></td>
                         <td><?php echo number_format($count->cos,2) ?></td>
-                        <td><?php echo date('jS M, Y',$count->ctime); ?></td>                 
+                        <td><?php echo date('jS M, Y',$count->ctime); ?></td>
                         <td><?php echo $fin->walletRemark($count->type);?></td>
                         <td><?php echo $fin->uName($count->rep);?></td>
                         <form method="post" action="/GoToTransaction">
                       @csrf
                       <input type="hidden" name="trno" value="{{$count->trno}}">
-                      <input type="hidden" name="flex" value="3"> 
+                      <input type="hidden" name="flex" value="3">
                       <td><button type="submit" class="btn btn-primary">Edit</a></td>
                       </form>
                       </tr>
                       <?php } ?>
                    </table>
-                
-               
+
+
               </div>
             </div>
-              
+
     </div>
   </div>
 </div>
 
 
-    
+
 
 
         <div class="modal modal-warning fade" id="modal-delete">
@@ -235,11 +235,11 @@ $fin = new Controller;
           <!-- /.modal-dialog -->
         </div>
         <!-- /.modal -->
-     
-    
+
+
                    <div class="modal modal-warning fade" id="modal-approve">
                      <div class="modal-dialog">
-                         
+
                     <form method="post" action="/Approveinv">
                         @csrf
                         <input type="hidden" name="_method" value="PUT">
@@ -261,12 +261,12 @@ $fin = new Controller;
                    </div>
                    <!-- /.modal -->
                  </form>
-           
-         
 
-   
-        
-                
+
+
+
+
+
                         <div class="modal fade" id="modal-edit">
                             <div class="modal-dialog">
                                 <form method="post" action="/EditInv">
@@ -275,18 +275,18 @@ $fin = new Controller;
                               <div class="modal-content">
                                 <div class="modal-header">
                                    <h4 class="modal-title text-uppercase">Modify Investment Information</h4>
-                                </div>           
-                            <div class="modal-body"> 
+                                </div>
+                            <div class="modal-body">
                                 <div class="form-group">
                                   <label>Investment Amount</label>
-                                  <input type="number" name="amount" id="Text1" class="form-control" 
+                                  <input type="number" name="amount" id="Text1" class="form-control"
                                   placeholder="Enter Loan Amount"  value="{{$invacc->amount}}"  required >
                                    </div>
                                    <div class="form-group">
                                   <label>Monthly Interest Rate (%)</label>
-                                  <input type="text" name="rate" id="Text2" class="form-control" value="{{$invacc->rate}}" 
+                                  <input type="text" name="rate" id="Text2" class="form-control" value="{{$invacc->rate}}"
                                    placeholder="Interest Rate" required>
-                                   </div>                
+                                   </div>
                                 <div class="form-group">
                                   <label>Investment Tenure</label>
                                   <select name="tenure" class="form-control select2"  required>
@@ -295,7 +295,7 @@ $fin = new Controller;
                                   <option value="180">180 Days</option>
                                   <option value="270">270 Days</option>
                                   <option value="360">360 Days</option>
-                                  </select>     
+                                  </select>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -306,8 +306,8 @@ $fin = new Controller;
                     </form>
                       </div>
                     </div>
-               
-              
+
+
                         <div class="modal fade" id="modal-terminate">
                           <div class="modal-dialog">
                             <div class="modal-content">
@@ -327,11 +327,11 @@ $fin = new Controller;
                           </div>
                           <!-- /.modal-dialog -->
                         </div>
-               
-              
-                 
-           
-                      
+
+
+
+
+
                               <div class="modal fade" id="modal-payment">
                                      <div class="modal-dialog">
                                        <div class="modal-content">
@@ -341,11 +341,11 @@ $fin = new Controller;
                                            <h4 class="modal-title text-uppercase">Investment Payment  [Deposit: ₦<?php echo number_format($deposit,2) ?>]</h4>
                                          </div>
                                          <div class="modal-body">
-                                                       
+
                                          <label>Amount to Pay</label>
                                          <input type="number" name="payamount" value="{{$invacc->amount}}" class="form-control" placeholder="Enter Amount"
                                           style="font-size: 20px; padding: 0 12px" readonly required>
-                                        
+
                                          <label>Date of payment</label>
                                          <input type="date" name="paydate" class="form-control" placeholder="Enter Date" required>
                                          </div>
@@ -360,9 +360,9 @@ $fin = new Controller;
                                      <!-- /.modal-dialog -->
                                    </div>
                                    <!-- /.modal -->
-                           
-                               
-                                  
+
+
+
                                       <div class="modal fade" id="modal-complete">
                                           <div class="modal-dialog">
                                             <form method="post" action="/LiquidateInv1">
@@ -371,13 +371,13 @@ $fin = new Controller;
                                             <div class="modal-content">
                                               <div class="modal-header">
                                                  <h4 class="modal-title text-uppercase">Complete Investment Liquidation</h4>
-                                              </div>            
-                                          <div class="modal-body"> 
+                                              </div>
+                                          <div class="modal-body">
                                           <div class="form-group">Are you sure you want to liquidate this investment and terminate the contract?<br></div>
                                               <div class="form-group">
                                                 <label>Authenticate Transaction</label>
                                                 <input type="password" name="validate"  class="form-control" placeholder="Enter Validation Code" required >
-                                              </div>              
+                                              </div>
                                           </div>
                                           <div class="modal-footer">
                                                 <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -387,10 +387,10 @@ $fin = new Controller;
                                     </form>
                                     </div>
                                   </div>
-                               
-                     
 
- 
+
+
+
       <div class="modal fade" id="modal-partial">
         <form method="post" action="/LiquidateInv2">
             @csrf
@@ -399,24 +399,24 @@ $fin = new Controller;
             <div class="modal-content">
               <div class="modal-header">
                  <h4 class="modal-title text-uppercase">Partial Investment Liquidation</h4>
-              </div>            
-          <div class="modal-body"> 
+              </div>
+          <div class="modal-body">
           <div class="form-group">Are you sure you want to liquidate this investment partially?<br></div>
               <div class="form-group">
                 <label>Amount to Liquidate</label>
                 <input type="number" name="payamount" value="<?php if($invacc->status >1){
-                  $liq = $walletloan3 + $walletloan4; $paid = $walletloan; $int = $status==3 ? $total : $walletloan2; 
-                  echo $max = $paid + $int - abs($liq); }?>" class="form-control" placeholder="Enter Amount" 
+                  $liq = $walletloan3 + $walletloan4; $paid = $walletloan; $int = $status==3 ? $total : $walletloan2;
+                  echo $max = $paid + $int - abs($liq); }?>" class="form-control" placeholder="Enter Amount"
                              style="font-size: 20px; padding: 0 12px" required>
               </div>
-              
+
               <div class="form-group">
                 <label>Date of Liquidation</label>
                 <input type="date" name="paydate" class="form-control" placeholder="Enter Date" required>
               </div>
               <div class="form-group">
                 <label>Authenticate Transaction</label>
-                <input type="password" name="validate"  class="form-control" placeholder="Enter Validation Code" required >              
+                <input type="password" name="validate"  class="form-control" placeholder="Enter Validation Code" required >
               </div>
 
           </div>
@@ -425,10 +425,10 @@ $fin = new Controller;
                 <button type="submit" class="btn btn-outline-primary" name="Partial" value="{{$invacc->ref }}"> LIQUIDATE INVESTMENT PARTIALLY </button>
           </div>
       </div>
-    </form>  
+    </form>
     </div>
   </div>
-         
-     
+
+
 
 @endsection

@@ -12,35 +12,35 @@ use App\Createloan;
 class CreateinvestmentController extends Controller
 {
     public function index()
-    {   
-        $product = DB::table('productsetup')->get()->where('type', 3)->where('bid', bid());      
+    {
+        $product = DB::table('productsetup')->get()->where('type', 3)->where('bid', bid());
         return view('createinvestment',['products'=>$product]);
     }
 
     function win_hash($length)
     {
-        return substr(str_shuffle(str_repeat('123456789',$length)),0,$length);	
+        return substr(str_shuffle(str_repeat('123456789',$length)),0,$length);
     }
 
     public function calculateInvest(Request $request)
-    {          
+    {
         $request->session()->put('amount', $request['amount']);
-        $request->session()->put('tenure', $request['tenure']);       
+        $request->session()->put('tenure', $request['tenure']);
         $data = Createloan::find($request['productkey']);
         $min = number_format($data->min);
-        $max = number_format($data->max);        
+        $max = number_format($data->max);
         if($request['amount']<$data->min or $request['amount']>$data->max)
         {
           return redirect('createinvestment')->with('error', 'Invalid amount, choose between ₦'.$min.' and ₦'.$max);
         }
-        else{           
+        else{
           $request->session()->put('data', $data);
-          return redirect('createinvestment')->with(['message'=> $data, 'vat'=>$data]);  
-        }    
+          return redirect('createinvestment')->with(['message'=> $data, 'vat'=>$data]);
+        }
     }
 
     public function submitInvestment(Request $request)
-    { 
+    {
           $investment = new Investment();
           $userid = auth()->user()->userid;
           $data = session()->get('data');
@@ -59,16 +59,36 @@ class CreateinvestmentController extends Controller
           $investment->interest = $request['amount']*$data->interest*$request['tenure']/100/30;
           $investment->rep = auth()->user()->userid;
           $invacc = DB::table('invacc')->get()->where('userid', $userid)->where('status', 1)->count();
+            $bidd = bid();
+            $data1 = DB::table('users')->where('userid', $userid)->where('bid', $bidd)->get();
+            foreach($data1 as $key){
+                $bvn = $key->bvn;
+                $accno = $key->accountno;
+                $accname = $key->accname;
+                $bankname = $key->bank;
+            }
             if($invacc > 0)
             {
               $request->session()->forget('data');
             return redirect('createinvestment')->with('error', 'You have a current investment application waiting for approval');
-            }else{
+            } elseif(empty($bvn)){
+                return back()->with('error', 'Please Update Your Bvn');
+            }
+            elseif(empty($accno)){
+                return back()->with('error', 'Please Update Your Account Number');
+            }
+            elseif(empty($accname)){
+                return back()->with('error', 'Please Update Your Account Name');
+            }
+            elseif(empty($bankname)){
+                return back()->with('error', 'Please Update Your Bank Name');
+            }
+            else{
             $investment->save();
             $refs =  $investment->ref;
              if($investment->save()){
                $request->session()->forget('data');
-            return redirect('createinvestment')->with(['success'=>' Investment Application Submitted Successfully ']);          
+            return redirect('createinvestment')->with(['success'=>' Investment Application Submitted Successfully ']);
         }
       }
     }

@@ -13,23 +13,23 @@ use Illuminate\Http\Request;
 class AdminCreateSavingsController extends Controller
 {
     public function activatesavings(Request $request){
-        $product = DB::table('productsetup')->get()->where('type', 2)->where('bid', bid());  
+        $product = DB::table('productsetup')->get()->where('type', 2)->where('bid', bid());
         $uid = session()->get('uid');
-        $data = DB::table('users')->get()->where('userid', $uid); 
-        $data2 = DB::table('savings')->get()->where('userid', $uid);  
+        $data = DB::table('users')->get()->where('userid', $uid);
+        $data2 = DB::table('savings')->get()->where('userid', $uid);
         foreach($data2 as $stat){
             $userstatus = $stat->status;
             //$deposit = $this->walletLoan($user,$refs,14);
-        } 
-        $status = $this->savingsStatus($userstatus ?? '') ; 
-        $request->session()->put('data', $data);   
+        }
+        $status = $this->savingsStatus($userstatus ?? '') ;
+        $request->session()->put('data', $data);
         return view('admin/admincreatesavings',['data'=>$data,'savings'=>$data2, 'status'=>$status,
         'products'=>$product]);
     }
 
-    public function searchsavings(Request $request){       
+    public function searchsavings(Request $request){
         $q = $request->input('q');
-        $bid = Auth::user()->bid; 
+        $bid = Auth::user()->bid;
         $user = User::select('*')->where('bid', $bid)->where(function ($query) use ($q) {
          $query->where('surname', 'LIKE', '%'.$q.'%')
             ->orWhere('othername', 'LIKE', '%'.$q.'%')
@@ -40,37 +40,37 @@ class AdminCreateSavingsController extends Controller
       if(empty($user)){
         return back()->with('error', 'No Details found. Try to search again!');
       }
-       elseif(count($user) > 0) {    
-            $request->session()->put('details', $user); 
+       elseif(count($user) > 0) {
+            $request->session()->put('details', $user);
            return back();  }
         else{
-           return back()->with('error', 'No Details found. Try to search again!');   }  
+           return back()->with('error', 'No Details found. Try to search again!');   }
     }
 
-    public function searchsavingsform(Request $request){  
-        $userstatus = '';     
+    public function searchsavingsform(Request $request){
+        $userstatus = '';
         $userid = $request->input('CreateNew');
         $request->session()->put('uid', $userid);
         return redirect('activatesavings');
     }
 
     public function ViewUserSavings(Request $request)
-    {   
-        $refs = $request->input('ManageSavings'); 
-        $data = DB::table('savings')->get()->where('ref', $refs);        
+    {
+        $refs = $request->input('ManageSavings');
+        $data = DB::table('savings')->get()->where('ref', $refs);
         $request->session()->put('savings', $data);
         $request->session()->put('ref', $request->input('Managesavings'));
-        return redirect('adminmanagesavings');    
+        return redirect('adminmanagesavings');
     }
 
     public function ViewSavingsDetails(Request $request)
-    {   
-        $refs = $request->input('ManageSavings'); 
-        $data = DB::table('savings')->get()->where('ref', $refs);        
+    {
+        $refs = $request->input('ManageSavings');
+        $data = DB::table('savings')->get()->where('ref', $refs);
         $request->session()->put('savings', $data);
         $request->session()->put('ref', $request->input('ManageSavings'));
-        return redirect('savingsmanaging');    
-       
+        return redirect('savingsmanaging');
+
     }
 
     public function savingsmanaging(Request $request){
@@ -79,10 +79,10 @@ class AdminCreateSavingsController extends Controller
         $refs = session()->get('ref');
         $data = DB::table('savings')->get()->where('ref', $refs);
         $userid = $this->saveName($refs,'userid');
-        $data2 = DB::table('users')->get()->where('userid', $userid);     
+        $data2 = DB::table('users')->get()->where('userid', $userid);
           foreach($data as $stat){
               $userstatus = $this->saveName($refs,'status');
-           } 
+           }
           $status = $this->savingsStatus($userstatus);
         // $loanExpiry = $this->savingsExpiryDate($refs);
           $walletloan= $this->walletLoan($userid,$refs,14);
@@ -102,12 +102,12 @@ class AdminCreateSavingsController extends Controller
            $walletremark = $this->walletRemark($this->saveName($refs,'type'));
 
            $sql=DB::select("SELECT * FROM ewallet WHERE ref='$refs' " );
-    
+
         return view('admin/adminmanagesavings')->with(['saving'=>$data, 'user'=>$data2, 'status'=>$status,
-         'admin1'=>$adminpermit, 'admin2'=>$adminpermit2, 'admin3'=>$adminpermit3, 'expect'=>$expected, 
+         'admin1'=>$adminpermit, 'admin2'=>$adminpermit2, 'admin3'=>$adminpermit3, 'expect'=>$expected,
          'save'=>$save, 'walletloan'=>$walletloan, 'walletloan2'=>$walletloan2, 'walletloan3'=>$walletloan3,
           'walletloan4'=>$walletloan4,'walletloan5'=>$walletloan5, 'total'=>$total, 'ccount'=>$sql,
-         'savedeposit'=>$saveDeposit,'remark'=>$walletremark ]);    
+         'savedeposit'=>$saveDeposit,'remark'=>$walletremark ]);
     }
 
     public function inactivesavings(){
@@ -139,7 +139,7 @@ class AdminCreateSavingsController extends Controller
         $statuss=[];
         $wallet=[];
         $data = DB::select("SELECT * FROM savings WHERE status=2 AND bid = '$bid'");
-      
+
         foreach($data as $user){
             $user= $user->userid;
             $usern = $this->uName($user);
@@ -159,8 +159,8 @@ class AdminCreateSavingsController extends Controller
         //$refs = $user->ref;
         //$walletloan= $this->walletLoan($user,$refs,14);
         //$walletloan= $this->walletLoan($user,$refs,14);
-       
-        return view('admin/adminsavingsaccount')->with(['activesavings'=> $data, 'user'=> $usernn, 'status'=>$statuss, 
+
+        return view('admin/adminsavingsaccount')->with(['activesavings'=> $data, 'user'=> $usernn, 'status'=>$statuss,
         'wallet'=>$wallet
        ]);
 
@@ -182,7 +182,7 @@ class AdminCreateSavingsController extends Controller
         }
         foreach($data as $refs){
             $ref= $refs->ref;
-            $refss[] = $ref; 
+            $refss[] = $ref;
         }
         foreach($data as $stat){
             $status = $stat->status;
@@ -200,8 +200,8 @@ class AdminCreateSavingsController extends Controller
             $refs = $sav->ref;
             $walletloan2 = $this->walletLoan($user,$refs,8);
             $wallet2[] = $walletloan2;
-        }       
-       return view('admin/expiredsavingsaccount')->with(['expiredsavings'=> $data, 'user'=> $usernn, 'status'=>$statuss, 
+        }
+       return view('admin/expiredsavingsaccount')->with(['expiredsavings'=> $data, 'user'=> $usernn, 'status'=>$statuss,
        'wallet'=>$wallet, 'wallet2'=>$wallet2]);
     }
 
@@ -220,7 +220,7 @@ class AdminCreateSavingsController extends Controller
         $m = session()->has('month1')?session()->get('month1'):date("m");
         $y =  session()->has('year1')?session()->get('year1'):date("y");
        // return $y;
-        
+
         $data = DB::select("SELECT * FROM ewallet WHERE type=14 AND mm=$m AND yy=$y AND bid='$bid'");
 
         foreach($data as $dat){
@@ -238,7 +238,7 @@ class AdminCreateSavingsController extends Controller
             $remar = $this->walletRemark($remm);
             $remark[] = $remar;
         }
-        
+
         return view('admin/savingsdeposits')->with(['datas'=> $data, 'user'=> $usernn, 'rep'=>$repss, 'remark'=>$remark]);
     }
 
@@ -258,18 +258,36 @@ class AdminCreateSavingsController extends Controller
         $savings->rate2 = $data->interest*2;
         $min = number_format($data->min);
         $max = number_format($data->max);
-        $userid = auth()->user()->userid;
+        $userid = $request['Sav'];
+        //return $userid;
+        $bidd = bid();
+        $data1 = DB::table('users')->where('userid', $userid)->where('bid', $bidd)->get();
+        foreach($data1 as $key){
+            $bvn = $key->bvn;
+            $accno = $key->accountno;
+            $accname = $key->accname;
+            $bankname = $key->bank;
+        }
         $check = DB::table('savings')->get()->where('userid', $userid)->where('status', 1)->count();
         if($request['amount']<$data->min or $request['amount']>$data->max)
         {
         return redirect('activatesavings')->with('error', 'Invalid amount, choose between ₦'.$min.' and ₦'.$max);
-        }           
+        }
+        elseif (empty($bvn)) {
+            return back()->with('error', 'No Bvn Number For Client');
+        } elseif (empty($accno)) {
+            return back()->with('error', 'No Account Number For Client');
+        } elseif (empty($accname)) {
+            return back()->with('error', 'No Account Name For Client');
+        } elseif (empty($bankname)) {
+            return back()->with('error', 'No Bank Name For Client');
+        }
         elseif($check > 0)
           {
             return redirect('activatesavings')->with('error', 'You currently have a similar savings account. Liquidate it to create a new one');
           }
         else{
-          $savings->save();      
+          $savings->save();
           if($savings->save()){
             return redirect('inactivesavingsaccount')->with('success', 'New Savings Plan Created');
           }
@@ -287,16 +305,16 @@ class AdminCreateSavingsController extends Controller
     }
 
     public function EditSavings(Request $request)
-    {   
+    {
         $repp = Auth::user()->userid;
         $refs = $request->input('EditSaving');
         $data = DB::table('savings')->get()->where('ref', $refs);
-        
+
         foreach($data as $rep){
             $id = $rep->id;
             $type = $rep->type;
         }
-        
+
         $amount = $request->input('amount');
         $rate = $request->input('rate');
         $rate2 = $rate*12;
@@ -308,9 +326,9 @@ class AdminCreateSavingsController extends Controller
           }
           else{
                $sqll = DB::select("UPDATE savings SET amount='$amount',rate='$rate',rate2='$rate2', period='$tenure',
-                 rep='$repp'  WHERE id='$id' "); 
-        return redirect('savingsmanaging')->with('success', 'Loan Application Updated Successfully'); 
-          }          
+                 rep='$repp'  WHERE id='$id' ");
+        return redirect('savingsmanaging')->with('success', 'Loan Application Updated Successfully');
+          }
     }
 
     public function SavingsPayment(Request $request){
@@ -319,16 +337,16 @@ class AdminCreateSavingsController extends Controller
         $refs = session()->get('ref');
         $amount = $request->input('payamount');
         $paydate = $request->input('paydate') ? strtotime($request->input('paydate')) : $ctime;
-        $data = DB::table('ewallet')->get()->where('ref', $refs);   
+        $data = DB::table('ewallet')->get()->where('ref', $refs);
         foreach($data as $rep){
             $lastime = $rep->ctime;
 
         }
         $date = $paydate;
         $mm = date('ym',$date);
-        $id = $this->saveName($refs,'userid'); 
+        $id = $this->saveName($refs,'userid');
         $bid = $this->saveName($refs,'bid');
-          
+
         if($amount>0){
             $this->walletProcess($bid,$id,$amount,5,14,$date,$refs); //deposit
            if($this->saveName($refs,'status')==1){
@@ -340,18 +358,18 @@ class AdminCreateSavingsController extends Controller
                     'mm'=>$mm,
                     'rep'=>$repp,
                 ]);
-                return back()->with(array('success'=>' Savings Account successfully Activated')); 
+                return back()->with(array('success'=>' Savings Account successfully Activated'));
             }
-            return redirect('savingsmanaging')->with('success', 'Savings payment submitted Successfully'); 
-        }          
-        else{ 
-            return redirect('savingsmanaging')->with('error', 'Invalid amount entered, confirm and try again'); 
+            return redirect('savingsmanaging')->with('success', 'Savings payment submitted Successfully');
         }
-                  
+        else{
+            return redirect('savingsmanaging')->with('error', 'Invalid amount entered, confirm and try again');
+        }
+
     }
 
     public function Liquidate1(Request $request)
-    {   
+    {
         $rep = Auth::user()->userid;
         $refs = $request->input('Complete');
         $userid = $this->saveName($refs,'userid');
@@ -361,23 +379,23 @@ class AdminCreateSavingsController extends Controller
         $ctime = time();
         $password = $_POST['validate'];
         $pass = $this->uName($rep,'password');
-      
-      if(password_verify($password, $pass)){     
+
+      if(password_verify($password, $pass)){
       $sq=DB::select("SELECT * FROM ewallet WHERE ref='$refs' AND type=9 ");
         if(count($sq)==0){
-           $this->walletProcess($bid,$userid,$deposit,5,9,$ctime,$refs);//liquidate savings          
+           $this->walletProcess($bid,$userid,$deposit,5,9,$ctime,$refs);//liquidate savings
            $this->walletProcess($bid,$userid,$interest,5,8,$ctime,$refs);//liquidate savings interest
            DB::select("UPDATE savings SET status=3,rep='$rep',stop='$ctime' WHERE ref='$refs' ");
         }
-        return redirect('savingsmanaging')->with('success', 'Savings Account successfully Liquidated'); 
+        return redirect('savingsmanaging')->with('success', 'Savings Account successfully Liquidated');
       }
       else{
           return redirect('savingsmanaging')->with('error', 'You have entered an incorrect validation code');
-      } 
+      }
     }
 
     public function Liquidate2(Request $request)
-    {   
+    {
         $rep = Auth::user()->userid;
         $refs = $request->input('Partial');
         $userid = $this->saveName($refs,'userid');
@@ -391,18 +409,18 @@ class AdminCreateSavingsController extends Controller
         $amount = $request->input('payamount');
         $mm = date('ym',$date);
         $password = $_POST['validate'];
-        $pass = $this->uName($rep,'password');            
-      if(password_verify($password, $pass)){   
+        $pass = $this->uName($rep,'password');
+      if(password_verify($password, $pass)){
            $this->walletProcess($bid,$userid,$amount,5,5,$date,$refs);//sav part liquidation record
-           return redirect('savingsmanaging')->with('success', 'Operation Successful. Your savings has been partially liquidated.'); 
+           return redirect('savingsmanaging')->with('success', 'Operation Successful. Your savings has been partially liquidated.');
       }
       else{
           return redirect('savingsmanaging')->with('error', 'You have entered an incorrect validation code');
-      } 
+      }
 
-    } 
+    }
 
 
 
-    
+
 }

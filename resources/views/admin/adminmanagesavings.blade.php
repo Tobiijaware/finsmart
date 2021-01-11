@@ -25,16 +25,16 @@ $fin = new Controller;
   <div class="col-lg-12">
     <div class="card">
     <div class="card-header">
-      
+
       <h4>Savings Account Details</h4>
-      <table id="example1"  class="table table-striped">
+      <table id=""  class="table table-striped">
         <thead>
         <tr>
           <th>Surname</th>
           <th>Other Names</th>
           <th>E-mail</th>
           <th>Phone No</th>
-          <th>Address</th>          
+          <th>Address</th>
         </tr>
         </thead>
         <tbody>
@@ -44,16 +44,16 @@ $fin = new Controller;
           <td>{{$user->email}}</td>
           <td>{{$user->phone}}</td>
           <td>{{$user->address}}</td>
-        </tr>              
+        </tr>
         </tbody>
          @endforeach
       </table>
     </div>
-    
+
   </div>
 
   </div>
- 
+
   {{-- </div> --}}
   {{-- </div> --}}
 </div>
@@ -65,7 +65,7 @@ $fin = new Controller;
         <div class="card-header">
           <h4>SAVINGS STATISTICS</h4>
         </div>
-       
+
         <table class="table">
             @foreach($saving as $saving)
                <tr>
@@ -79,11 +79,11 @@ $fin = new Controller;
                <tr>
                  <th>Periodic Amount</th>
                  <td>₦{{number_format($saving->amount,2)}}</td>
-               </tr> 
+               </tr>
                <tr>
                  <th>Monthly Interest Rate</th>
                  <td>{{$saving->rate}}%</td>
-               </tr> 
+               </tr>
                <tr>
                  <th>Yearly Interest Rate</th>
                  <td>{{$saving->rate2}}%</td>
@@ -91,11 +91,11 @@ $fin = new Controller;
                <tr>
                  <th>Periodic Cycle</th>
                  <td>{{$saving->period}} Days</td>
-               </tr>              
+               </tr>
                <tr>
                  <th>Savings Application Date</th>
                  <td><?php echo date('jS M, Y',strtotime($saving->created_at)) ?></td>
-               </tr> 
+               </tr>
                <?php if($saving->status >1){ ?>
                <tr>
                  <th>Activation Date</th>
@@ -105,8 +105,8 @@ $fin = new Controller;
                <tr>
                  <th>Expiry Date</th>
                  <td><?php echo date('jS M, Y',$saving->stop) ?></td>
-               </tr> 
-               <?php } ?>             
+               </tr>
+               <?php } ?>
                <?php if($saving->status == 2){ ?>
                <tr>
                  <th>Account Age</th>
@@ -120,7 +120,7 @@ $fin = new Controller;
                  <th>Outstanding Payment</th>
                  <td>₦<?php $paid = $walletloan; echo number_format($expected-$paid,2); ?></td>
                </tr>
-               <?php } ?>           
+               <?php } ?>
                <tr>
                  <th>Total Deposit Received</th>
                  <td>₦<?php $paid = $walletloan; echo number_format($paid,2); ?></td>
@@ -137,31 +137,31 @@ $fin = new Controller;
                </tr>
                <tr>
                  <th>Total Value</th>
-                 <td><?php $int = $status==2 ? $total : $walletloan2; 
+                 <td><?php $int = $status==2 ? $total : $walletloan2;
                   echo number_format($paid+$int-abs($liq),2); ?></td>
                 </tr>
                <?php } ?>
               @endforeach
                </table>
-               
+
                 <div class="div">
                     <?php if($fin->saveName($saving->ref,'status')<3 AND $admin1==1){ ?>
-                        <button style="" class="btn btn-outline-warning" data-toggle="modal" data-target="#modal-edit" >EDIT SAVINGS INFORMATION</button> 
+                        <button style="" class="btn btn-outline-warning" data-toggle="modal" data-target="#modal-edit" >EDIT SAVINGS INFORMATION</button>
                         <?php } ?>
                         <?php if($fin->saveName($saving->ref,'status')==1 AND $admin1==1){ ?>
-                          <button style="" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-delete" > DELETE SAVINGS ACCOUNT</button> 
-                                  <?php } ?> 
+                          <button style="" class="btn btn-outline-danger" data-toggle="modal" data-target="#modal-delete" > DELETE SAVINGS ACCOUNT</button>
+                                  <?php } ?>
                          <?php if($fin->saveName($saving->ref,'status')==2 AND $admin3==1){ ?>
-                          <button style="float: right; margin:0 10px" class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-terminate"> LIQUIDATE SAVINGS</button> 
+                          <button style="float: right; margin:0 10px" class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-terminate"> LIQUIDATE SAVINGS</button>
                          <?php } ?>
                          <?php if($saving->status>0 AND $admin2==1){ ?>
-                          <button  class="btn btn-outline-success mt-3" data-toggle="modal" data-target="#modal-payment"> RECEIVE PAYMENT </button>  
+                          <button  class="btn btn-outline-success mt-3" data-toggle="modal" data-target="#modal-payment"> RECEIVE PAYMENT </button>
                          <?php } ?>
                 </div>
               </div>
               <div class="col-md-6  table-responsive">
                 <div class="card-header">
-                  <h4>TRANSACTION HISTORY</h4>  
+                  <h4>TRANSACTION HISTORY</h4>
                 </div>
                 <table class="table">
                     <tr>
@@ -172,11 +172,11 @@ $fin = new Controller;
                         <th>PROCESSED</th>
                         <th>ACTION</th>
                     </tr>
-                        <?php   
-                        $e=0; 
-                        foreach($ccount as $count){                  
+                        <?php
+                        $e=0;
+                        foreach($ccount as $count){
                         $e++
-                     ?>         
+                     ?>
                      <tr>
                        <td><?php echo $e; ?></td>
                        <td><?php echo number_format(abs($count->cos),2) ?></td>
@@ -186,23 +186,23 @@ $fin = new Controller;
                        <form method="post" action="/GoToTransaction">
                         @csrf
                         <input type="hidden" name="trno" value="{{$count->trno}}">
-                        <input type="hidden" name="flex" value="2"> 
+                        <input type="hidden" name="flex" value="2">
                         <td><button type="submit" class="btn btn-sm btn-outline-primary">Edit</a></td>
                      </form>
                      </tr>
                       <?php } ?>
                    </table>
-                
-               
+
+
               </div>
             </div>
-              
+
     </div>
   </div>
 </div>
 
 
-    
+
 
 
         <div class="modal modal-warning fade" id="modal-delete">
@@ -227,18 +227,18 @@ $fin = new Controller;
           <!-- /.modal-dialog -->
         </div>
         <!-- /.modal -->
-     
-    
-        
+
+
+
             <div class="modal fade" id="modal-terminate">
               <div class="modal-dialog">
-              
+
                 <div class="modal-content">
                   <div class="modal-header">
                     <h4 class="modal-title text-uppercase">Liquidate Savings</h4>
                   </div>
                   <div class="modal-body">
-                    <p>Confirm that you want to liquidate savings by selecting appropriate mode of liquidation</p>               
+                    <p>Confirm that you want to liquidate savings by selecting appropriate mode of liquidation</p>
                   </div>
                   <div class="modal-footer">
                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -246,16 +246,16 @@ $fin = new Controller;
                     <button class="btn btn-outline-primary" data-toggle="modal" data-target="#modal-partial">Partial Liquidation</button>
                   </div>
                 </div>
-          
+
                 <!-- /.modal-content -->
               </div>
               <!-- /.modal-dialog -->
             </div>
             <!-- /.modal -->
-         
 
-   
-        
+
+
+
                     <div class="modal fade" id="modal-payment">
                          <div class="modal-dialog">
                             <form method="post" action="/SavingsPayment">
@@ -267,7 +267,7 @@ $fin = new Controller;
                              <div class="modal-body">
                              <label>Amount to Pay</label>
                              <input type="number" name="payamount" value="{{$saving->amount}}" class="form-control" placeholder="Enter Amount"
-                              style="font-size: 20px; padding: 0 12px" required>            
+                              style="font-size: 20px; padding: 0 12px" required>
                              <label>Date of payment</label>
                              <input type="date" name="paydate" class="form-control" placeholder="Enter Date" required>
                              </div>
@@ -282,10 +282,10 @@ $fin = new Controller;
                          <!-- /.modal-dialog -->
                        </div>
                        <!-- /.modal -->
-                
-              
-                      
-            
+
+
+
+
                   <div class="modal fade" id="modal-edit">
                     <form method="post" action="/EditSavings">
                         @csrf
@@ -293,19 +293,19 @@ $fin = new Controller;
                         <div class="modal-content">
                           <div class="modal-header">
                              <h4 class="modal-title text-uppercase">Modify Savings Information</h4>
-                          </div>          
-                       <input type="hidden" name="_method" value="PUT">  
-                      <div class="modal-body"> 
+                          </div>
+                       <input type="hidden" name="_method" value="PUT">
+                      <div class="modal-body">
                           <div class="form-group">
                             <label>Periodic Savings Amount</label>
-                            <input type="number" name="amount" id="Text1" class="form-control" 
+                            <input type="number" name="amount" id="Text1" class="form-control"
                             value="{{$saving->amount}}" placeholder="Enter Loan Amount" required >
                              </div>
                              <div class="form-group">
                             <label>Monthly Interest Rate (%)</label>
-                            <input type="text" name="rate" id="Text2" class="form-control" value="{{$saving->rate}}" 
+                            <input type="text" name="rate" id="Text2" class="form-control" value="{{$saving->rate}}"
                              placeholder="Interest Rate" required>
-                             </div>                
+                             </div>
                           <div class="form-group">
                             <label>Savings Periodic Cycle</label>
                             <select name="tenure" class="form-control select2" id="Text3" onchange="add_number()" required>
@@ -323,8 +323,8 @@ $fin = new Controller;
                                   <option value="270">270 Days</option>
                                   <option value="300">300 Days</option>
                                   <option value="330">330 Days</option>
-                                  <option value="360">360 Days</option>                
-                            </select>         
+                                  <option value="360">360 Days</option>
+                            </select>
                           </div>
                       </div>
                       <div class="modal-footer">
@@ -335,9 +335,9 @@ $fin = new Controller;
                 </form>
                 </div>
               </div>
-            
-        
-              
+
+
+
                   <div class="modal fade" id="modal-complete">
                     <form method="post" action="/Liquidate1">
                         @csrf
@@ -346,13 +346,13 @@ $fin = new Controller;
                         <div class="modal-content">
                           <div class="modal-header">
                              <h4 class="modal-title text-uppercase">Complete Savings Liquidation</h4>
-                          </div>            
-                      <div class="modal-body"> 
+                          </div>
+                      <div class="modal-body">
                       <div class="form-group">Are you sure you want to liquidate this savings and terminate the contract? <br></div>
                           <div class="form-group">
                             <label>Authenticate Transaction</label>
                             <input type="password" name="validate"  class="form-control" placeholder="Enter Validation Code" required >
-                          </div>              
+                          </div>
                       </div>
                       <div class="modal-footer">
                             <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -362,35 +362,35 @@ $fin = new Controller;
                 </form>
                 </div>
               </div>
-        
-           
+
+
                   <div class="modal fade" id="modal-partial">
                       <div class="modal-dialog">
                         <form method="post" action="/Liquidate2">
-                            @csrf   
+                            @csrf
                             <input type="hidden" name="_method" value="PUT">
                         <div class="modal-content">
                           <div class="modal-header">
-                           
+
                              <h4 class="modal-title text-uppercase">Partial Savings Liquidation</h4>
-                          </div>            
-                      <div class="modal-body"> 
+                          </div>
+                      <div class="modal-body">
                       <div class="form-group">Are you sure you want to liquidate this savings partially? <br></div>
                           <div class="form-group">
                             <label>Amount to Liquidate</label>
-                            <input type="number" name="payamount" value="<?php if($saving->status >1){echo $max = $paid+$int-abs($liq); }?>" 
+                            <input type="number" name="payamount" value="<?php if($saving->status >1){echo $max = $paid+$int-abs($liq); }?>"
                             class="form-control" placeholder="Enter Amount" style="font-size: 20px; padding: 0 12px" required>
                           </div>
-                          
+
                           <div class="form-group">
                             <label>Date of Liquidation</label>
                             <input type="date" name="paydate" class="form-control" placeholder="Enter Date" required>
                           </div>
                           <div class="form-group">
                             <label>Authenticate Transaction</label>
-                            <input type="password" name="validate"  class="form-control" placeholder="Enter Validation Code" required >              
+                            <input type="password" name="validate"  class="form-control" placeholder="Enter Validation Code" required >
                           </div>
-            
+
                       </div>
                       <div class="modal-footer">
                             <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button>
@@ -400,8 +400,8 @@ $fin = new Controller;
                 </form>
                 </div>
               </div>
-          
-            
-     
+
+
+
 
 @endsection

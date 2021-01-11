@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 use DB;
 use Illuminate\Http\Request;
 use App\Createloan;
+use Illuminate\Support\Facades\Auth;
 use App\Savings;
 
 class CreatesavingController extends Controller
 {
     public function index()
-    {   
-        $product = DB::table('productsetup')->get()->where('type', 2)->where('bid', bid());      
+    {
+        $product = DB::table('productsetup')->get()->where('type', 2)->where('bid', bid());
         return view('createsavings',['products'=>$product]);
     }
 
     function win_hash($length)
     {
-        return substr(str_shuffle(str_repeat('123456789',$length)),0,$length);	
+        return substr(str_shuffle(str_repeat('123456789',$length)),0,$length);
     }
 
     public function submitsaving(Request $request)
@@ -33,26 +34,47 @@ class CreatesavingController extends Controller
           $savings->rate = $data->interest;
           $min = number_format($data->min);
           $max = number_format($data->max);
-          $userid = auth()->user()->userid;
+          $userid = Auth::user()->userid;
+          $bidd = bid();
           $check = DB::table('savings')->get()->where('userid', $userid)->where('status', 1)->count();
+        $data1 = DB::table('users')->where('userid', $userid)->where('bid', $bidd)->get();
+        foreach($data1 as $key){
+            $bvn = $key->bvn;
+            $accno = $key->accountno;
+            $accname = $key->accname;
+            $bankname = $key->bank;
+        }
+        //return $data1;
 
           if($request['amount']<$data->min or $request['amount']>$data->max)
           {
           return redirect('createsavings')->with('error', 'Invalid amount, choose between ₦'.$min.' and ₦'.$max);
-          }           
+          }
           elseif($check > 0)
             {
               return redirect('createsavings')->with('error', 'You currently have a similar savings account. Liquidate it to create a new one');
             }
+          elseif(empty($bvn)){
+              return back()->with('error', 'Please Update Your Bvn');
+          }
+          elseif(empty($accno)){
+              return back()->with('error', 'Please Update Your Account Number');
+          }
+          elseif(empty($accname)){
+              return back()->with('error', 'Please Update Your Account Name');
+          }
+          elseif(empty($bankname)){
+              return back()->with('error', 'Please Update Your Bank Name');
+          }
           else{
             $savings->save();
-            $refs =  $savings->ref;      
+            $refs =  $savings->ref;
             if($savings->save()){
               $data = DB::table('savings')->get()->where('ref', $refs);
               foreach($data as $stat){
                 $userstatus = $stat->status;
             }
-            $status = $this->savingsStatus($userstatus); 
+            $status = $this->savingsStatus($userstatus);
               $sql = DB::table('ewallet')
                   ->where('userid', $userid)
                   ->where('ref', $refs)

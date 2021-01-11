@@ -21,6 +21,12 @@
       <?php foreach($staffdata as $key){?>
         <div class="card-header">
             <h3 class="card-title"><b>{{getStaff($key->userid)}}</b></h3>
+            <span style="float:right;">
+                    <form method="post" action="/viewclientdetails">
+                        @csrf
+                        <button type="submit" name="viewclientprofile" value="{{$key->userid}}" class="btn btn-sm btn-outline-primary">Profile</button>
+                    </form>
+            </span>
         </div>
         <div class="card-body">
 

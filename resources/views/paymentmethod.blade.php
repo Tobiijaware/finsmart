@@ -97,13 +97,13 @@
         <div class="modal-header">
 
         </div>
-        <input type="hidden" name="email" value="oluwatobiijaware@gmail.com"> {{-- required --}}
+        <input type="hidden" name="email" value="{{Auth::user()->email}}"> {{-- required --}}
         {{-- <input type="hidden" name="orderID" value="345"> --}}
-        <input type="hidden" name="amount" value="5000"> {{-- required in kobo --}}
+        <input type="hidden" name="amount" value="50"> {{-- required in kobo --}}
         {{-- <input type="hidden" name="quantity" value="1">--}}
         <input type="hidden" name="currency" value="NGN">
         @if(!Auth::guest())
-        <input type="hidden" name="metadata" value="1"> {{-- For other necessary things you want to add to your payload. it is optional though --}}
+        <input type="hidden" name="metadata" value="1">{{-- For other necessary things you want to add to your payload. it is optional though --}}
         @endif
         {{-- <input type="hidden" name="reference" value="{{ Paystack::genTranxRef() }}">  --}}
         {{-- <input type="hidden" name="key" value="{{ config('paystack.secretKey') }}"> --}}

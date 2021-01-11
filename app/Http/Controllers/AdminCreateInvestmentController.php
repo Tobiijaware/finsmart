@@ -14,18 +14,18 @@ class AdminCreateInvestmentController extends Controller
 {
     public function activateinvestment(Request $request){
         $uid = session()->get('uid');
-        $data = DB::table('users')->get()->where('userid', $uid); 
-        $data2 = DB::table('invacc')->get()->where('userid', $uid);  
+        $data = DB::table('users')->get()->where('userid', $uid);
+        $data2 = DB::table('invacc')->get()->where('userid', $uid);
         foreach($data2 as $stat){
             $userstatus = $stat->status;
-        } 
-        $status = $this->loanStatus($userstatus ?? '') ; 
-        $request->session()->put('data', $data);  
-        $product = DB::table('productsetup')->get()->where('type', 3)->where('bid', bid());     
+        }
+        $status = $this->loanStatus($userstatus ?? '') ;
+        $request->session()->put('data', $data);
+        $product = DB::table('productsetup')->get()->where('type', 3)->where('bid', bid());
         return view('admin/admincreateinvestment')->with(['data'=>$data,'invest'=>$data2, 'status'=>$status,'products'=>$product]);
     }
 
-    
+
     public function viewinvestmentorder(){
       $usernn = [];
         $user = '';
@@ -37,7 +37,7 @@ class AdminCreateInvestmentController extends Controller
             $user = $user->userid;
             $usern = $this->uName($user);
            $usernn[] = $usern;
-            
+
         };
         foreach($userid as $stat){
             $stats = $stat->status;
@@ -47,32 +47,32 @@ class AdminCreateInvestmentController extends Controller
         return view('admin/investmentorder',['invest'=>$userid, 'user'=>$usernn, 'status'=>$status]);
     }
 
-    public function searchform(Request $request){  
-        $userstatus = '';     
+    public function searchform(Request $request){
+        $userstatus = '';
         $userid = $request->input('CreateNew');
         $request->session()->put('uid', $userid);
         return redirect('activateinvestment');
     }
 
     public function calculator(Request $request)
-    {          
+    {
         $request->session()->put('amount', $request['amount']);
-        $request->session()->put('tenure', $request['tenure']);       
+        $request->session()->put('tenure', $request['tenure']);
         $dataa = CreateInvestment::find($request['productkey']);
         $min = number_format($dataa->min);
-        $max = number_format($dataa->max);        
+        $max = number_format($dataa->max);
         if($request['amount']<$dataa->min or $request['amount']>$dataa->max)
         {
           return redirect('activateinvestment')->with('error', 'Invalid amount, choose between ₦'.$min.' and ₦'.$max);
         }
-        else{           
+        else{
           $request->session()->put('d', $dataa);
-          return redirect('activateinvestment');  
-        }    
+          return redirect('activateinvestment');
+        }
     }
 
     public function adminsubmitInvestment(Request $request)
-    { 
+    {
           $investment = new Investment();
           $data = session()->get('d');
           $investment->userid = session()->get('uid');
@@ -80,7 +80,7 @@ class AdminCreateInvestmentController extends Controller
           foreach($user as $key){
             $investment->bid = $key->bid;
           }
-            
+
           $investment->userid = session()->get('uid');
           $investment->bid = auth()->user()->bid;
           $investment->ref = $this->win_hash(10);
@@ -96,40 +96,57 @@ class AdminCreateInvestmentController extends Controller
           $investment->interest = $request['amount']*$data->interest*$request['tenure']/100/30;
           $investment->rep = auth()->user()->userid;
           $userid = $investment->userid;
+            $bidd = bid();
+            $data1 = DB::table('users')->where('userid', $userid)->where('bid', $bidd)->get();
+            foreach($data1 as $key){
+                $bvn = $key->bvn;
+                $accno = $key->accountno;
+                $accname = $key->accname;
+                $bankname = $key->bank;
+            }
           $invacc = DB::table('invacc')->get()->where('userid', $userid)->where('status', 1)->count();
             if($invacc > 0)
             {
               $request->session()->forget('data');
             return back()->with('error', 'You have a current investment application waiting for approval');
-            }else{
+            }elseif (empty($bvn)) {
+                return back()->with('error', 'No Bvn Number For Client');
+            } elseif (empty($accno)) {
+                return back()->with('error', 'No Account Number For Client');
+            } elseif (empty($accname)) {
+                return back()->with('error', 'No Account Name For Client');
+            } elseif (empty($bankname)) {
+                return back()->with('error', 'No Bank Name For Client');
+            }
+            else{
             $investment->save();
             $refs =  $investment->ref;
              if($investment->save()){
                $request->session()->forget('data');
-            return redirect('investmentorder')->with(['success'=>' Investment Application Submitted Successfully ']);          
+            return redirect('investmentorder')->with(['success'=>' Investment Application Submitted Successfully ']);
         }
       }
     }
 
-    public function search(Request $request){       
+    public function search(Request $request){
         $q = $request->input('q');
         $user = User::where('surname', 'LIKE', '%'. $q . '%')->orwhere('othername', 'LIKE', '%'. $q . '%')
         ->orwhere('email', 'LIKE', '%'. $q . '%')->orwhere('phone', 'LIKE', '%'. $q . '%')->get();
-      
-        if(count($user) > 0) {    
-            $request->session()->put('details', $user); 
+
+        if(count($user) > 0) {
+            $request->session()->put('details', $user);
            return back();  }
         else{
-           return back()->with('error', 'No Details found. Try to search again!');   }  
+           return back()->with('error', 'No Details found. Try to search again!');   }
     }
 
     public function ViewUserInvestment(Request $request)
-    {   
-        $refs = $request->input('ManageInvestment'); 
-        $data = DB::table('loan')->get()->where('ref', $refs);        
+    {
+        $refs = $request->input('ManageInvestment');
+        $data = DB::table('loan')->get()->where('ref', $refs);
         $request->session()->put('loan', $data);
         $request->session()->put('ref', $request->input('ManageInvestment'));
-        return redirect('adminmanageinvestment');    
+        return redirect('adminmanageinvestment');
     }
 
     public function investmentpending(){
@@ -143,7 +160,7 @@ class AdminCreateInvestmentController extends Controller
             $user = $user->userid;
             $usern = $this->uName($user);
            $usernn[] = $usern;
-            
+
         };
         foreach($userid as $stat){
             $stats = $stat->status;
@@ -164,7 +181,7 @@ class AdminCreateInvestmentController extends Controller
           $user = $user->userid;
           $usern = $this->uName($user);
          $usernn[] = $usern;
-          
+
       };
       foreach($userid as $stat){
           $stats = $stat->status;
@@ -198,7 +215,7 @@ class AdminCreateInvestmentController extends Controller
         $remar = $this->walletRemark($remm);
         $remark[] = $remar;
     }
-    
+
     return view('admin/investmentdeposits')->with(['datas'=> $data, 'user'=> $usernn, 'rep'=>$repss, 'remark'=>$remark]);
 
 }
@@ -214,7 +231,7 @@ class AdminCreateInvestmentController extends Controller
           $user = $user->userid;
           $usern = $this->uName($user);
          $usernn[] = $usern;
-          
+
       };
       foreach($userid as $stat){
           $stats = $stat->status;
@@ -225,16 +242,16 @@ class AdminCreateInvestmentController extends Controller
   }
 
   public function ViewInvestDetails(Request $request)
-    {   
-        $refs = $request->input('ManageInv'); 
-        $data = DB::table('invacc')->get()->where('ref', $refs);        
+    {
+        $refs = $request->input('ManageInv');
+        $data = DB::table('invacc')->get()->where('ref', $refs);
         $request->session()->put('invacc', $data);
         $request->session()->put('ref', $request->input('ManageInv'));
-        return redirect('investmentmanaging');    
+        return redirect('investmentmanaging');
     }
 
     public function investmentmanaging(Request $request){
-  
+
       $invacc = session()->get('invacc');
       $refs = session()->get('ref');
       $data = DB::table('invacc')->get()->where('ref', $refs);
@@ -247,12 +264,12 @@ class AdminCreateInvestmentController extends Controller
       $terminate = $this->terminationDate($refs);
       $total = $this->totalInvInt($refs);
       $walletloan =$this->walletLoan($userid,$refs,3);
-       
+
        $data2 = DB::table('users')->get()->where('userid', $userid);
        foreach($data as $stat){
             $userstatus = $this->invName($refs,'status');
             $uname = $this->uName($userid);
-       } 
+       }
          $status = $this->invStatus($userstatus);
          $setname = $this->set2Name($type,'vat');
           $walletloan= $this->walletLoan($userid,$refs,18);
@@ -269,13 +286,13 @@ class AdminCreateInvestmentController extends Controller
          $tranchloan = $this->invName($refs,'tranch');
          $invDeposit = $this->invDeposit($refs);
          $sql=DB::select("SELECT * FROM ewallet WHERE ref='$refs'" );
-    
+
       return view('admin/adminmanageinv')->with(['invacc'=>$data, 'user'=>$data2, 'status'=>$status, 'setname'=>$setname,
       'terminate'=>$terminate, 'total'=>$total, 'walletloan'=>$walletloan, 'walletloan2'=>$walletloan2, 'walletloan3'=>$walletloan3,
       'walletloan4'=>$walletloan4,'walletloan5'=>$walletloan5,  'ccount'=>$sql, 'admin1'=>$adminpermit,
-      'admin2'=>$adminpermit,'admin3'=>$adminpermit,'admin4'=>$adminpermit, 'deposit'=>$invDeposit, 'remark'=>$walletremark]);    
+      'admin2'=>$adminpermit,'admin3'=>$adminpermit,'admin4'=>$adminpermit, 'deposit'=>$invDeposit, 'remark'=>$walletremark]);
   }
-   
+
   public function Deleteinv(Request $request){
     $refs = session()->get('ref');
     $sql = DB::table('invacc')
@@ -303,16 +320,16 @@ class AdminCreateInvestmentController extends Controller
   }
 
   public function EditInv(Request $request)
-  {   
+  {
       $repp = Auth::user()->userid;
       $refs = $request->input('EditInv');
       $data = DB::table('invacc')->get()->where('ref', $refs);
-      
+
       foreach($data as $rep){
           $id = $rep->id;
           $type = $rep->type;
       }
-      
+
       $amount = $request->input('amount');
       $rate = $request->input('rate');
       $tenure = $request->input('tenure');
@@ -323,9 +340,9 @@ class AdminCreateInvestmentController extends Controller
         }
         else{
              $sqll = DB::select("UPDATE invacc SET amount='$amount',rate='$rate',tenure='$tenure',
-               rep='$repp'  WHERE id='$id' "); 
-      return redirect('investmentmanaging')->with('success', 'Investment Application Updated Successfully'); 
-        }          
+               rep='$repp'  WHERE id='$id' ");
+      return redirect('investmentmanaging')->with('success', 'Investment Application Updated Successfully');
+        }
   }
 
   public function MakeInvPayment(Request $request){
@@ -337,30 +354,30 @@ class AdminCreateInvestmentController extends Controller
     $date = $request->input('paydate') ? strtotime($request->input('paydate')) : $ctime;
     $stop = $date+60*60*24*$this->invName($refs,'tenure');
     $mm = date('ym',$date);
-    $id = $this->invName($refs,'userid'); 
+    $id = $this->invName($refs,'userid');
 
-    $data = DB::table('ewallet')->get()->where('ref', $refs);   
+    $data = DB::table('ewallet')->get()->where('ref', $refs);
     foreach($data as $rep){
         $lastime = $rep->ctime;
 
     }
     $mm = date('ym',$date);
-    $id = $this->invName($refs,'userid'); 
+    $id = $this->invName($refs,'userid');
     $bid = $this->invName($refs,'bid');
-      
+
     if($amount>0){
         $this->walletProcess($bid,$id,$amount,5,18,$date,$refs); //deposit
         DB::select("UPDATE invacc SET status=3,rep='$repp',start='$date',stop='$stop',mm='$mm' WHERE ref='$refs' ");
-        return redirect('investmentmanaging')->with('success', 'Investment payment submitted Successfully'); 
-    }          
-    else{ 
-        return redirect('investmentmanaging')->with('error', 'Invalid amount entered, confirm and try again'); 
+        return redirect('investmentmanaging')->with('success', 'Investment payment submitted Successfully');
     }
-          
+    else{
+        return redirect('investmentmanaging')->with('error', 'Invalid amount entered, confirm and try again');
+    }
+
 }
 
 public function LiquidateInv1(Request $request)
-    {   
+    {
         $rep = Auth::user()->userid;
         $refs = $request->input('Complete');
         $userid = $this->invName($refs,'userid');
@@ -369,23 +386,23 @@ public function LiquidateInv1(Request $request)
         $interest = $this->totalInvInt($refs);
         $ctime = time();
         $password = $_POST['validate'];
-        $pass = $this->uName($rep,'password');   
-      if(password_verify($password, $pass)){     
+        $pass = $this->uName($rep,'password');
+      if(password_verify($password, $pass)){
       $sq=DB::select("SELECT * FROM ewallet WHERE ref='$refs' AND type=4 ");
         if(count($sq)==0){
-           $this->walletProcess($bid,$userid,$deposit,5,4,$ctime,$refs);//liquidate investment          
+           $this->walletProcess($bid,$userid,$deposit,5,4,$ctime,$refs);//liquidate investment
            $this->walletProcess($bid,$userid,$interest,5,3,$ctime,$refs);//liquidate investment interest
            DB::select("UPDATE invacc SET status=4,rep='$rep',stop='$ctime' WHERE ref='$refs' ");
         }
-          return redirect('investmentmanaging')->with('success', 'Investment Account successfully Liquidated'); 
+          return redirect('investmentmanaging')->with('success', 'Investment Account successfully Liquidated');
       }
       else{
           return redirect('investmentmanaging')->with('error', 'You have entered an incorrect validation code');
-      } 
+      }
     }
 
     public function LiquidateInv2(Request $request)
-    {   
+    {
         $rep = Auth::user()->userid;
         $refs = $request->input('Partial');
         $userid = $this->invName($refs,'userid');
@@ -398,19 +415,19 @@ public function LiquidateInv1(Request $request)
         $amount = $request->input('payamount');
         $mm = date('ym',$date);
         $password = $_POST['validate'];
-        $pass = $this->uName($rep,'password');            
-      if(password_verify($password, $pass)){   
+        $pass = $this->uName($rep,'password');
+      if(password_verify($password, $pass)){
            $this->walletProcess($bid,$userid,$amount,5,6,$date,$refs);// investment part liquidation record
            return redirect('investmentmanaging')->with('success', 'Operation Successful. Your investment has
-            been partially liquidated.'); 
+            been partially liquidated.');
       }
       else{
           return redirect('investmentmanaging')->with('error', 'You have entered an incorrect validation code');
-      } 
+      }
 
-    } 
+    }
 
 
 
-   
+
 }

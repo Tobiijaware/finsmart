@@ -15,7 +15,7 @@ class PayController extends Controller
         require 'paystack/src/autoload.php';
         $public_key = Auth::user()->pkey;
         $secret_key = Auth::user()->skey;
-        $amount = $request['amount'];
+        $amount = $request['amount']*100;
         $email = $request['email'];
         $reference = $this->win_hash(8);
         $paytype = $request['metadata'];
@@ -174,7 +174,58 @@ class PayController extends Controller
         }else{
             return redirect('manageinvestment')->with('error', 'Payment Not Successful');
         }
-    }
+    }elseif ($paytype==5){
+            $wallet = new Ewallet();
+            $transactionid = $paymentDetails['data']['id'];
+            $wallet->trno = $this->win_hash(9);
+            $wallet->userid =  $paymentDetails['data']['metadata'] ['userid'];
+            $wallet->bid = $paymentDetails['data']['metadata'] ['bid'];
+            $wallet->ref =  $paymentDetails['data']['metadata'] ['ref'];
+            $wallet->cos = ($paymentDetails['data']['amount'])/100;
+            $wallet->ref2 =  $paymentDetails['data']['reference'];
+            $wallet->type = 1;
+            $wallet->status = 10;
+            $wallet->remark = 'Wallet Funding';
+            $wallet->ctime = time();
+            $wallet->mm = date('m',$wallet->ctime);
+            $wallet->yy = date('y',$wallet->ctime);
+            $wallet->rep = $paymentDetails['data']['metadata'] ['userid'];
+            //$rep = $wallet->rep;
+            //$mm = date('ym', time());
+            $wallet->save();
+            if($wallet->save()){
+                return back()->with('success', 'Funding Successful');
+            }else{
+                return back()->with('error', 'Operation Failed');
+            }
+
+        }elseif($paytype==6){
+            $wallet = new Ewallet();
+            //$transactionid = $paymentDetails['data']['id'];
+            $wallet->trno = $this->win_hash(9);
+            $wallet->userid =  $paymentDetails['data']['metadata'] ['userid'];
+            $wallet->bid = $paymentDetails['data']['metadata'] ['bid'];
+            $wallet->ref =  $paymentDetails['data']['metadata'] ['ref'];
+            $wallet->cos = ($paymentDetails['data']['amount'])/100;
+            $wallet->ref2 =  $paymentDetails['data']['reference'];
+            $wallet->type = 20;
+            $wallet->status = 6;
+            $wallet->remark = 'Loan Repayment';
+            $wallet->ctime = time();
+            $wallet->mm = date('m',$wallet->ctime);
+            $wallet->yy = date('y',$wallet->ctime);
+            $wallet->rep = $paymentDetails['data']['metadata'] ['userid'];
+            $rep = $wallet->rep;
+            $loanref =  $wallet->ref;
+            $wallet->save();
+            $sql = DB::select("UPDATE loan SET status=5,rep='$rep' WHERE ref='$loanref'");
+            if($wallet->save()){
+                return back()->with('success', 'Loan Repaid');
+            }else{
+                return back()->with('error', 'Operation Failed');
+            }
+
+        }
 
 }
 

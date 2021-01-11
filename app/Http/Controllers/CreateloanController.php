@@ -49,6 +49,7 @@ class createloanController extends Controller
           $loan->prorate = $data->profee;
           $loan->type = $data->id;
           $loan->rep = auth()->user()->userid;
+          $loan->penaltyfee = $request['amount']*$data->penalty/100;
 
           $interest = ($request['amount'])*($data->interest)*($request['tenure'])/100/30;
           $loan->interest = $interest;

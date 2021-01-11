@@ -233,6 +233,7 @@ class AdminCreateloanController extends Controller
         $request->session()->put('amount', $request['amount']);
         $request->session()->put('tenure', $request['tenure']);
         $request->session()->put('rate', $request['rate']);
+
         $dataa = Product::find($request['productkey']);
         //$data=session()->get('data');
         $min = number_format($dataa->min);
@@ -262,6 +263,7 @@ class AdminCreateloanController extends Controller
             $bankname = $key->bank;
         }
 
+
         $loan->ref = $this->win_hash(8);
         $loan->amount = $request['amount'];
         $loan->tenure = $request['tenure'];
@@ -269,6 +271,7 @@ class AdminCreateloanController extends Controller
         $loan->prorate = $data->profee;
         $loan->type = $data->id;
         $loan->rep = auth()->user()->userid;
+        $loan->penaltyfee = $request['amount']*$data->penalty/100;
 
         $interest = ($request['amount']) * ($data->interest) * ($request['tenure']) / 100 / 30;
         $loan->interest = $interest;
@@ -470,7 +473,7 @@ class AdminCreateloanController extends Controller
             $sql = DB::table('loan')
             ->where('ref',$refs)
             ->update([
-                'status'=>2,
+                'status'=>3,
                 'rep'=>$rep,
             ]);
             if($sql){
@@ -588,10 +591,16 @@ class AdminCreateloanController extends Controller
                 ]);
 
             $this->addLoanTranch($refs);
+            $remark = 'Loan Disbursed';
             $id = $this->loanName($refs,'userid');
             $bid = $this->loanName($refs,'bid');
             $amt = $this->loanName($refs,'amount')+$this->loanName($refs,'interest');
-            $this->walletProcess($bid,$id,$amt,5,10,$start,$refs); //disburse
+            $amount = $this->loanName($refs,'amount');
+            $interest = $this->loanName($refs,'interest');
+            $profee = $this->loanName($refs,'profee');
+            $this->walletPro2($refs,$bid,$id,10,$amount,$interest,$profee,$remark);
+            $this->walletProcess($bid,$id,$amt,5,10,$start,$refs,$remark); //disburse
+
             return redirect('loanmanaging')->with('success', 'Loan Disburse Confirmed Successfully');
             }
 
@@ -637,3 +646,4 @@ class AdminCreateloanController extends Controller
 
 
 }
+

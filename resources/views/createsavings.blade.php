@@ -40,32 +40,41 @@
                 <div class="col-md-4">
                     <div class="form-group">
                       <label>Periodic Savings Amount</label>
-                      <input type="number" name="amount" id="Text1" class="form-control" placeholder="Enter Savings Amount" required >                
+                      <input type="number" name="amount" id="Text1" class="form-control" placeholder="Enter Savings Amount" required >
                     </div>
                   </div>
-          
+
                   <div class="col-md-4">
                    <div class="form-group">
                       <label>Savings Periodic Cycle</label>
                       <select name="tenure" class="form-control select2" id="Text3" required>
                       <option value="">Select Option...</option>
-                      <option value="1">1 Day</option>
-                      <option value="7">7 Days</option>
-                      <option value="30">30 Days</option>                
-                      </select>                 
+                          <option value="30">30 Days</option>
+                          <option value="60">60 Days</option>
+                          <option value="90">90 Days</option>
+                          <option value="120">120 Days</option>
+                          <option value="150">150 Days</option>
+                          <option value="180">180 Days</option>
+                          <option value="210">210 Days</option>
+                          <option value="240">240 Days</option>
+                          <option value="270">270 Days</option>
+                          <option value="300">300 Days</option>
+                          <option value="330">330 Days</option>
+                          <option value="360">360 Days</option>
+                      </select>
                     </div>
                 </div>
                 <div class="col-md-9"></div>
                 <div class="col-md-3">
-                    <div class="form-group">            
-                      <button type="submit" class="btn btn-outline-primary btn-block"> Create New Savings Plan</button>                
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-outline-primary btn-block"> Create New Savings Plan</button>
                     </div>
                   </div>
             </div>
             </form>
         </div>
     </div>
-    </div>  
+    </div>
     </div>
 
 @endsection

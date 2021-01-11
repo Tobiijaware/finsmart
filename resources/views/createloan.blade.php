@@ -42,7 +42,7 @@
                       <label>Loan Amount</label>
                       <input type="number"name="amount" id="Text1" class="form-control" placeholder="Enter Loan Amount" required >
                     </div>
-                </div> 
+                </div>
                 <div class="col-md-4">
                     <div class="form-group">
                       <label>Loan Tenure</label>
@@ -61,7 +61,7 @@
                         <option value="330">330 Days</option>
                         <option value="360">360 Days</option>
                         </select>
-                            
+
                     </div>
                 </div>
                 <div class="col-md-9"></div>
@@ -75,7 +75,7 @@
             </form>
         </div>
     </div>
-    </div>  
+    </div>
     </div>
 
     <?php $data = session()->get('data');
@@ -94,29 +94,30 @@
             <input type="hidden" name="amount" value="{{session()->get('amount')}}">
             <input type="hidden" name="tenure" value="{{session()->get('tenure')}}">
             <table class="table">
-                <tr><th>Loan Amount</th><td>₦ {{number_format(session()->get('amount'))}}</td></tr> 
+                <tr><th>Loan Amount</th><td>₦ {{number_format(session()->get('amount'))}}</td></tr>
                 <tr><th>Interest Rate</th><td>{{$data->interest}}%</td></tr>
-                <tr><th>Loan Tenure</th><td>{{session()->get('tenure')}} Days</td></tr>                
-                <tr><th>Interest Value</th><td>₦<?php 
-                $int = session()->get('amount')*$data->interest*session()->get('tenure')/100/30; 
+                <tr><th>Loan Tenure</th><td>{{session()->get('tenure')}} Days</td></tr>
+                <tr><th>Penalty Fee</th><td>₦<?php echo number_format($data->penalty*session()->get('amount')/100,2)?></td></tr>
+                <tr><th>Interest Value</th><td>₦<?php
+                $int = session()->get('amount')*$data->interest*session()->get('tenure')/100/30;
                  echo number_format($int,2) ?></td></tr>
-                <tr><th>Expected Repayment</th><td>₦<?php 
+                <tr><th>Expected Repayment</th><td>₦<?php
                 $exp = session()->get('amount') + $int;  echo number_format($exp,2) ?></td></tr>
-                <tr><th>Monthly Repayment</th><td>₦<?php  echo number_format($exp*30/session()->get('tenure'),2) ?> 
-                (<?php $tranches = session()->get('tenure')/30;  echo $tranches ?>)</td></tr>  
-                <tr><th>Processing Fee</th><td><?php $pro = session()->get('amount') *$data->profee/100; 
-                 echo number_format($pro,2) ?> 
-                (<?php echo $data->profee ?>%)</td></tr> 
+                <tr><th>Monthly Repayment</th><td>₦<?php  echo number_format($exp*30/session()->get('tenure'),2) ?>
+                (<?php $tranches = session()->get('tenure')/30;  echo $tranches ?>)</td></tr>
+                <tr><th>Processing Fee</th><td><?php $pro = session()->get('amount') *$data->profee/100;
+                 echo number_format($pro,2) ?>
+                (<?php echo $data->profee ?>%)</td></tr>
             </table>
             </div>
             <div class="col-md-6  table-responsive">
                 <h4>REPAYMENT SCHEDULE</h4>
                 <table class="table">
-                  <tr><th>INSTALMENT</td><th>REPAYMENT</th><th>DUE DATE </td></tr> 
-                  <?php $i=1 ; $ctime = time(); 
+                  <tr><th>INSTALMENT</td><th>REPAYMENT</th><th>DUE DATE </td></tr>
+                  <?php $i=1 ; $ctime = time();
                   while($i<=$tranches){ $e=$i++; $ctime += 60*60*24*30; ?>
                     <tr><td>Instalment <?php echo $e ?></th><td><?php  echo number_format($exp*30/session()->get('tenure'),2) ?></td><td><?php echo date('jS M, Y',$ctime) ?></td></tr>
-             <?php } ?>        
+             <?php } ?>
                   </tr>
                 </table>
               </div>
@@ -127,7 +128,7 @@
             </form>
         </div>
       </div>
-    </div> 
+    </div>
     <?php } ?>
 
 @endsection

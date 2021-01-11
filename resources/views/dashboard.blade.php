@@ -18,7 +18,7 @@
     </div><!-- /.row -->
   </div><!-- /.container-fluid -->
 </div>
-
+{{penaltyfee()}}
 <section class="content">
   <div class="container-fluid">
     <div class="row">
@@ -112,6 +112,8 @@
           <!-- /.card-body -->
       </div>
   </div>
+
+
 </section>
 
 
